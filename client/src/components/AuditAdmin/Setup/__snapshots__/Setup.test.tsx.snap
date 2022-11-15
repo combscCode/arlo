@@ -88,10 +88,10 @@ exports[`Setup renders Audit Settings stage 1`] = `
                   Delaware
                 </option>
                 <option
-                  label="District Of Columbia"
+                  label="District of Columbia"
                   value="DC"
                 >
-                  District Of Columbia
+                  District of Columbia
                 </option>
                 <option
                   label="Florida"
@@ -747,10 +747,10 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
                   Delaware
                 </option>
                 <option
-                  label="District Of Columbia"
+                  label="District of Columbia"
                   value="DC"
                 >
-                  District Of Columbia
+                  District of Columbia
                 </option>
                 <option
                   label="Florida"
@@ -1412,10 +1412,10 @@ exports[`Setup renders Audit Settings stage with processing next stage 1`] = `
                   Delaware
                 </option>
                 <option
-                  label="District Of Columbia"
+                  label="District of Columbia"
                   value="DC"
                 >
-                  District Of Columbia
+                  District of Columbia
                 </option>
                 <option
                   label="Florida"
