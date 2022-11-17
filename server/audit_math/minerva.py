@@ -191,7 +191,9 @@ def collect_risks(
         #    raise ValueError(f"{round_size=} not equal to sum({obs=})")
         audit.set_observations(round_size, sum(obs), obs)
 
-        # TODO: check for the audit being over, after which it will throw an error
+        # Check for the audit being over, otherwise athena will throw an error
+        if audit.status[audit.active_contest].risks[-1] < alpha:
+            break
         logging.debug(
             f"minerva  collect_risks: {audit.status[audit.active_contest].risks[-1]=}"
         )
