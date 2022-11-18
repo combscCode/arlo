@@ -163,7 +163,7 @@ def test_get_sample_size_landslide_low_votes(caplog):
     caplog.set_level(logging.WARN)
     d2 = minerva.make_arlo_contest({"a": 10, "b": 0})
     res = minerva.get_sample_size(1, d2, None, [])
-    assert "Landlide contests with few total votes may produce larger first round sizes than expected" in caplog.text
+    assert [record.levelname for record in caplog.records].count("WARNING") > 0
 
 def test_get_sample_size_big():
     # Binary search result, just over approximation threshold of 1.5% margin
