@@ -19,6 +19,10 @@ def contests():
 # TODO regularize tests via parameterization
 # Note also doctests in minerva.py module.
 
+def test_see_oversampling():
+    c3 = minerva.make_arlo_contest({"a": 600, "b": 650})
+    res = minerva.get_sample_size(10, c3, None, [])
+    print(res)
 
 def test_get_sample_size():
     c3 = minerva.make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
