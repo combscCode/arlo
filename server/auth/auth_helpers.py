@@ -183,6 +183,7 @@ def restrict_access(user_types: List[UserType]):
             if "audit_board_id" in kwargs and "round_id" not in kwargs:
                 raise Exception("round_id required in route params")  # pragma: no cover
 
+            election = None
             # Substitute route params for their corresponding resources
             if "election_id" in kwargs:
                 election_id = kwargs.pop("election_id")

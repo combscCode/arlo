@@ -22,7 +22,7 @@ from ..util.file import (
     store_file,
     timestamp_filename,
 )
-from ..util.csv_download import csv_response
+from ..util.csv_download import csv_response, merge_csvs
 from ..util.csv_parse import (
     CSVValueType,
     CSVColumnType,
@@ -281,6 +281,21 @@ def download_ballot_manifest_file(
         retrieve_file(jurisdiction.manifest_file.storage_path),
         jurisdiction.manifest_file.name,
     )
+
+
+@api.route(
+    "/election/<election_id>/ballot-manifest/csv/all", methods=["GET"],
+)
+@restrict_access([UserType.AUDIT_ADMIN])
+def download_all_ballot_manifest_files(election: Election,):
+    merged_file = merge_csvs(
+        [jurisdiction.name for jurisdiction in election.jurisdictions],
+        [
+            retrieve_file(jurisdiction.manifest_file.storage_path)
+            for jurisdiction in election.jurisdictions
+        ],
+    )
+    return csv_response(merged_file, "chris_testing.csv")
 
 
 @api.route(
