@@ -30,12 +30,14 @@ def csv_response(csv_file: IO, filename: str) -> Response:
 
 
 def merge_csvs(names: List[str], csv_files: List[IO]) -> str:
-    # TODO: clean this function up a bit.
+    if len(names) != len(csv_files):
+        raise ValueError("names and csv_files passed to merge_csvs must have the same length.")
+    if len(names) == 0:
+        raise ValueError("length of lists passed to merge_csv must be non-zero")
     merged_file = [b"Jusrisdiction Name," + csv_files[0].readline()]
     for name, csv_file in zip(names, csv_files):
         if not csv_file.readable():
-            # TODO: Make better error statement.
-            raise ValueError("csv file should be readable!")
+            raise ValueError(f"Could not read csv_file {csv_file}")
         for line in csv_file.readlines()[1:]:
             merged_file.append(bytes(name, encoding="utf8") + b"," + line)
         if merged_file[-1][-1] != "\n":

@@ -284,7 +284,7 @@ def download_ballot_manifest_file(
 
 
 @api.route(
-    "/election/<election_id>/ballot-manifest/csv/all", methods=["GET"],
+    "/election/<election_id>/ballot-manifest/csvs", methods=["GET"],
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def download_all_ballot_manifest_files(election: Election,):
@@ -295,7 +295,8 @@ def download_all_ballot_manifest_files(election: Election,):
             for jurisdiction in election.jurisdictions
         ],
     )
-    return csv_response(merged_file, "chris_testing.csv")
+    return csv_response(merged_file,
+        election.election_name + "_jurisdiction_manifests.csv")
 
 
 @api.route(
