@@ -38,6 +38,10 @@ const TableControls = styled.div`
   margin-bottom: 0.5rem;
 `
 
+const TableFooter = styled.div`
+  margin-top: 0.5rem;
+`
+
 const formatNumber = ({ value }: { value: number | null }) =>
   value && value.toLocaleString()
 
@@ -351,6 +355,16 @@ const Progress: React.FC<IProgressProps> = ({
           auditSettings={auditSettings}
         />
       )}
+      <TableFooter>
+        <Button
+          icon="download"
+          onClick={() => {
+            window.location.href = `/api/election/${electionId}/ballot-manifest/csvs`
+          }}
+        >
+          Download all jurisdiction files as CSV
+        </Button>
+      </TableFooter>
     </Wrapper>
   )
 }
