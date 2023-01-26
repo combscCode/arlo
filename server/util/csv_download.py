@@ -1,6 +1,6 @@
 import re
 from datetime import datetime
-from typing import IO, List
+from typing import IO, List, Union
 from flask import Response
 
 from ..models import *  # pylint: disable=wildcard-import
@@ -21,7 +21,7 @@ def jurisdiction_timestamp_name(election: Election, jurisdiction: Jurisdiction) 
     return f"{jurisdiction_name}-{election_name}-{now}"
 
 
-def csv_response(csv_file: IO, filename: str) -> Response:
+def csv_response(csv_file: Union[IO, bytes], filename: str) -> Response:
     return Response(
         csv_file,
         mimetype="text/csv",
@@ -29,17 +29,24 @@ def csv_response(csv_file: IO, filename: str) -> Response:
     )
 
 
-def merge_csvs(names: List[str], csv_files: List[IO]) -> str:
+def merge_csvs(names: List[str], csv_files: List[IO]) -> bytes:
     if len(names) != len(csv_files):
-        raise ValueError("names and csv_files passed to merge_csvs must have the same length.")
+        raise ValueError(
+            "names and csv_files passed to merge_csvs must have the same length."
+        )
     if len(names) == 0:
         raise ValueError("length of lists passed to merge_csv must be non-zero")
-    merged_file = [b"Jusrisdiction Name," + csv_files[0].readline()]
+    merged_lines = []
     for name, csv_file in zip(names, csv_files):
         if not csv_file.readable():
             raise ValueError(f"Could not read csv_file {csv_file}")
-        for line in csv_file.readlines()[1:]:
-            merged_file.append(bytes(name, encoding="utf8") + b"," + line)
-        if merged_file[-1][-1] != "\n":
-            merged_file[-1] += b"\n"
-    return merged_file
+        for i, line in enumerate(csv_file.readlines()):
+            if i == 0:
+                # Extract header from first file
+                if len(merged_lines) == 0:
+                    merged_lines.append(b"Jurisdiction Name," + line)
+            else:
+                merged_lines.append(bytes(name, encoding="utf8") + b"," + line)
+        if merged_lines[-1][-1] != ord("\n"):
+            merged_lines[-1] += b"\n"
+    return b"".join(merged_lines)

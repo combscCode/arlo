@@ -216,6 +216,14 @@ const Progress: React.FC<IProgressProps> = ({
     },
   ]
 
+  const jurisdictionStatuses = jurisdictions.map(getJurisdictionStatus)
+  const atLeastOneBallot = jurisdictionStatuses.some(
+    status =>
+      status !== JurisdictionProgressStatus.UPLOADS_NOT_STARTED &&
+      status !== JurisdictionProgressStatus.UPLOADS_IN_PROGRESS &&
+      status !== JurisdictionProgressStatus.UPLOADS_FAILED
+  )
+
   if (!round) {
     if (auditType === 'BATCH_COMPARISON') {
       columns.push({
@@ -355,16 +363,18 @@ const Progress: React.FC<IProgressProps> = ({
           auditSettings={auditSettings}
         />
       )}
-      <TableFooter>
-        <Button
-          icon="download"
-          onClick={() => {
-            window.location.href = `/api/election/${electionId}/ballot-manifest/csvs`
-          }}
-        >
-          Download all jurisdiction files as CSV
-        </Button>
-      </TableFooter>
+      {atLeastOneBallot && (
+        <TableFooter>
+          <Button
+            icon="download"
+            onClick={() => {
+              window.location.href = `/api/election/${electionId}/ballot-manifest/csvs`
+            }}
+          >
+            Download all jurisdiction files as CSV
+          </Button>
+        </TableFooter>
+      )}
     </Wrapper>
   )
 }

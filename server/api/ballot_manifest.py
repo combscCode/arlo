@@ -287,16 +287,23 @@ def download_ballot_manifest_file(
     "/election/<election_id>/ballot-manifest/csvs", methods=["GET"],
 )
 @restrict_access([UserType.AUDIT_ADMIN])
-def download_all_ballot_manifest_files(election: Election,):
+def download_all_ballot_manifest_files(election: Election):
+    # In the case where some jurisdictions haven't uploaded ballot manifests,
+    # we still want to return meaningful results.
+    reporting_jurisdictions = [
+        j for j in election.jurisdictions if j.manifest_file is not None
+    ]
     merged_file = merge_csvs(
-        [jurisdiction.name for jurisdiction in election.jurisdictions],
+        [jurisdiction.name for jurisdiction in reporting_jurisdictions],
         [
             retrieve_file(jurisdiction.manifest_file.storage_path)
-            for jurisdiction in election.jurisdictions
+            for jurisdiction in reporting_jurisdictions
         ],
     )
-    return csv_response(merged_file,
-        election.election_name + "_jurisdiction_manifests.csv")
+    return csv_response(
+        merged_file,
+        election.audit_name.replace(" ", "_") + "_jurisdiction_manifests.csv",
+    )
 
 
 @api.route(

@@ -70,6 +70,7 @@ def test_jurisdictions_list_with_manifest(
     manifest = (
         b"Batch Name,Number of Ballots\n" b"1,23\n" b"2,101\n" b"3,122\n" b"4,400"
     )
+    manifest_combined = b"Jurisdiction Name,Batch Name,Number of Ballots\nJ1,1,23\nJ1,2,101\nJ1,3,122\nJ1,4,400\n"
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={"manifest": (io.BytesIO(manifest), "manifest.csv",)},
@@ -128,6 +129,14 @@ def test_jurisdictions_list_with_manifest(
     )
     assert rv.headers["Content-Disposition"] == 'attachment; filename="manifest.csv"'
     assert rv.data == manifest
+
+    rv = client.get(f"/api/election/{election_id}/ballot-manifest/csvs")
+
+    assert (
+        rv.headers["Content-Disposition"]
+        == 'attachment; filename="Test_Audit_test_jurisdictions_list_with_manifest_jurisdiction_manifests.csv"'
+    )
+    assert rv.data == manifest_combined
 
 
 def test_download_ballot_manifest_not_found(client, election_id, jurisdiction_ids):
