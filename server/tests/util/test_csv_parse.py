@@ -12,6 +12,8 @@ from ...util.csv_parse import (
     validate_csv_mimetype,
 )
 
+from ...util.csv_download import merge_csvs
+
 BALLOT_MANIFEST_COLUMNS = [
     CSVColumnType("Batch Name", CSVValueType.TEXT, unique=True),
     CSVColumnType("Number of Ballots", CSVValueType.NUMBER),
@@ -1041,3 +1043,19 @@ Batch ó,1
     )
     assert len(rows) == 5000
     assert rows[-1]["Batch Name"] == "Batch �"
+
+
+def test_merge_csv_bad_input():
+    # Should error on diff length arrays or zero-length arrays.
+    with pytest.raises(ValueError):
+        merge_csvs([], [None])
+    with pytest.raises(ValueError):
+        merge_csvs([], [])
+
+
+def test_merge_csv_newlines():
+    csv = b"Batch Name,Number of Ballots\n1,23\n2,101\n3,122\n4,400\n"
+    manifest_combined = b"Jurisdiction Name,Batch Name,Number of Ballots\nJ1,1,23\nJ1,2,101\nJ1,3,122\nJ1,4,400\n"
+    file_like = io.BytesIO(csv)
+    output = merge_csvs(["J1"], [file_like])
+    assert output == manifest_combined
