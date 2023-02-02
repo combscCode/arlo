@@ -38,8 +38,8 @@ const TableControls = styled.div`
   margin-bottom: 0.5rem;
 `
 
-const TableFooter = styled.div`
-  margin-top: 0.5rem;
+const TableHeader = styled.div`
+  margin-bottom: 0.5rem;
 `
 
 const formatNumber = ({ value }: { value: number | null }) =>
@@ -322,6 +322,18 @@ const Progress: React.FC<IProgressProps> = ({
         <br /> To view a single jurisdiction&apos;s data, click the name of the
         jurisdiction.
       </p>
+      {atLeastOneBallot && (
+        <TableHeader>
+          <Button
+            icon="download"
+            onClick={() => {
+              window.location.href = `/api/election/${electionId}/ballot-manifest/csvs`
+            }}
+          >
+            Download all jurisdiction files as ZIP
+          </Button>
+        </TableHeader>
+      )}
       <TableControls>
         <div style={{ flexGrow: 1, marginRight: '20px' }}>
           <FilterInput
@@ -338,6 +350,7 @@ const Progress: React.FC<IProgressProps> = ({
             style={{ marginRight: '20px', marginBottom: 0 }}
           />
         )}
+        {/* TODO: update component to pass an optional name for the download button. */}
         <DownloadCSVButton
           tableId="progress-table"
           fileName={`audit-progress-${
@@ -362,18 +375,6 @@ const Progress: React.FC<IProgressProps> = ({
           handleClose={() => setJurisdictionDetailId(null)}
           auditSettings={auditSettings}
         />
-      )}
-      {atLeastOneBallot && (
-        <TableFooter>
-          <Button
-            icon="download"
-            onClick={() => {
-              window.location.href = `/api/election/${electionId}/ballot-manifest/csvs`
-            }}
-          >
-            Download all jurisdiction files as CSV
-          </Button>
-        </TableFooter>
       )}
     </Wrapper>
   )
