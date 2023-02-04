@@ -330,7 +330,7 @@ const Progress: React.FC<IProgressProps> = ({
               window.location.href = `/api/election/${electionId}/ballot-manifest/csvs`
             }}
           >
-            Download all jurisdiction files as ZIP
+            Download all ballot manifests as CSV
           </Button>
         </TableHeader>
       )}
