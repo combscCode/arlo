@@ -21,6 +21,14 @@ def jurisdiction_timestamp_name(election: Election, jurisdiction: Jurisdiction) 
     return f"{jurisdiction_name}-{election_name}-{now}"
 
 
+def zip_response(zip_file: Union[IO, bytes], filename: str) -> Response:
+    return Response(
+        zip_file,
+        mimetype="application/zip",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
 def csv_response(csv_file: Union[IO, bytes], filename: str) -> Response:
     return Response(
         csv_file,

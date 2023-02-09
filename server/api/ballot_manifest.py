@@ -1,5 +1,7 @@
 from typing import Optional
 import uuid
+from io import BytesIO
+from zipfile import ZipFile
 import logging
 from datetime import datetime
 from flask import request, jsonify, Request, session
@@ -22,7 +24,7 @@ from ..util.file import (
     store_file,
     timestamp_filename,
 )
-from ..util.csv_download import csv_response, merge_csvs
+from ..util.csv_download import csv_response, merge_csvs, zip_response
 from ..util.csv_parse import (
     CSVValueType,
     CSVColumnType,
@@ -293,16 +295,18 @@ def download_all_ballot_manifest_files(election: Election):
     reporting_jurisdictions = [
         j for j in election.jurisdictions if j.manifest_file is not None
     ]
-    merged_file = merge_csvs(
-        [jurisdiction.name for jurisdiction in reporting_jurisdictions],
-        [
-            retrieve_file(jurisdiction.manifest_file.storage_path)
-            for jurisdiction in reporting_jurisdictions
-        ],
-    )
-    return csv_response(
-        merged_file,
-        election.audit_name.replace(" ", "_") + "_jurisdiction_manifests.csv",
+    memory_file = BytesIO()
+    with ZipFile(memory_file, mode="w") as myzip:
+        for jurisdiction in reporting_jurisdictions:
+            with open(jurisdiction.manifest_file.storage_path, "r") as f:
+                myzip.writestr(
+                    "manifests/" + jurisdiction.name + "_jurisdiction_manifest.csv",
+                    f.read(),
+                )
+    memory_file.seek(0)
+    return zip_response(
+        memory_file,
+        election.audit_name.replace(" ", "_") + "_jurisdiction_manifests.zip",
     )
 
 
